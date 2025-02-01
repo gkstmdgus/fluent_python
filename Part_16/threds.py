@@ -7,15 +7,9 @@
 """
 from concurrent import futures
 
-from sequential import save_flag, get_flag, show, main
+from sequential import main, download_one
 
 MAX_WORKERS = 5
-
-def download_one(cc):
-    image = get_flag(cc)
-    show(cc)
-    save_flag(image, cc.lower() + ".gif")
-    return cc
 
 def download_many(cc_list):
     workers = min(MAX_WORKERS, len(cc_list))

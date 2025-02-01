@@ -18,17 +18,41 @@ def get_flag(cc):
     cc = cc.lower()
     url = f"{BASE_URL}/{cc}/{cc}.gif"
     resp = requests.get(url)
+    if resp.status_code != "200":
+        resp.raise_for_status()
     return resp.content
 
-def show(text):
-    print(text, end=" ")
-    sys.stdout.flush()
+def show(text, status, msg):
+    print(f"{status}: {text}. msg: {msg}")
+
+def download_one(cc):
+    try:
+        image = get_flag(cc)
+    except requests.exceptions.HTTPError as exc:
+        res = exc.response
+        if res.status_code == 404:
+            # 404에러 이외의 예외는 download_many()함수로 전달
+            status = res.status_code
+            msg = "not found"
+        else:
+            raise exc
+    else:
+        save_flag(image, cc.lower() + ".gif")
+        status = 200
+        msg = "OK"
+        
+    show(cc, status, msg)
+    return cc
 
 def download_many(cc_list):
     for cc in sorted(cc_list):
-        image = get_flag(cc)
-        show(cc)
-        save_flag(image, cc.lower() + ".gif")
+        try:
+            download_one(cc)
+        except requests.exceptions.HTTPError as exc:
+            res = exc.response
+            print(f'HTTP error {res.status_code} - {res.reason}')
+        except requests.exceptions.ConnectionError as exc:
+            print('Connection error')
     return len(cc_list)
 
 def main(download_many):

@@ -1,3 +1,9 @@
+"""
+asyncio 사용하는 버전. 
+- asyncio.Task와 threading.Tread와 대등하다고 생각하면 된다. 
+- Task는 코루틴을 구동하고 Thead는 콜러블을 호출한다. 
+- await == yield from
+"""
 import itertools
 import asyncio
 import sys
